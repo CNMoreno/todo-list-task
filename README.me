@@ -29,25 +29,25 @@ go run cmd/main.go
 
 ### 4️⃣ Test with `curl`
 ```sh
-curl -X POST http://localhost:8080/login -d '{"username": "test", "password": "password"}'
+curl -X POST http://localhost:8080/login -H "Content-Type: application/json" -d '{"username": "test", "password": "password"}'
 ```
 
 ## 🛠 Endpoints
 
 ### 🧑‍💻 Authentication & User Management
-| Method | Endpoint     | Description              |
-|--------|-------------|--------------------------|
-| POST   | `/users`    | Creates a new user       |
-| POST   | `/login`    | Logs in and generates a JWT |
+| Method | Endpoint  | Description               |
+|--------|----------|---------------------------|
+| POST   | `/users` | Creates a new user        |
+| POST   | `/login` | Logs in and generates a JWT |
 
 ### ✅ Task Management
-| Method | Endpoint         | Description                  |
-|--------|-----------------|------------------------------|
-| POST   | `/tasks`        | Creates a new task         |
-| GET    | `/tasks`        | Retrieves all tasks     |
-| GET    | `/tasks/:id`    | Retrieves a specific task |
-| PUT    | `/tasks/:id`    | Updates a task          |
-| DELETE | `/tasks/:id`    | Deletes a task            |
+| Method | Endpoint      | Description               |
+|--------|--------------|---------------------------|
+| POST   | `/tasks`     | Creates a new task        |
+| GET    | `/tasks`     | Retrieves all tasks       |
+| GET    | `/tasks/:id` | Retrieves a specific task |
+| PUT    | `/tasks/:id` | Updates a task            |
+| DELETE | `/tasks/:id` | Deletes a task            |
 
 ## 🚀 Usage Examples
 
@@ -87,11 +87,11 @@ curl -X GET http://localhost:8080/tasks \
  ├── 📂 cmd                # Main entry point
  │    ├── main.go
  ├── 📂 internal
- │    ├── 📂 app                  # Business logic
- │    ├── 📂 domain               # Business models
- │    ├── 📂 infrastructure       # In-memory persistence and HTTP controllers
- │    ├── 📂 middleware           # Middleware logic
- │    ├── 📂 utils                # Utils logic
+ │    ├── 📂 app            # Business logic
+ │    ├── 📂 domain         # Business models
+ │    ├── 📂 infrastructure # In-memory persistence and HTTP controllers
+ │    ├── 📂 middleware     # Middleware logic
+ │    ├── 📂 utils          # Utility functions
  ├── go.mod
  ├── go.sum
  ├── README.md
@@ -108,10 +108,14 @@ To run unit tests:
 ```sh
 go test ./...
 ```
+To generate coverage:
 ```sh
 make coverage
 ```
 
 ## ⚖️ License
 MIT 📄
+
+---
+✨ Contributions are welcome! If you have ideas to improve the project, feel free to open a PR or an issue. 🚀
 
