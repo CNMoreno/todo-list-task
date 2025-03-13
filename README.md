@@ -106,7 +106,7 @@ curl -X GET http://localhost:8080/tasks \
 ## 🏃 Testing
 To run unit tests:
 ```sh
-go test ./...
+go test ./internal/infrastructure/http/  ./internal/utils
 ```
 To generate coverage:
 ```sh
