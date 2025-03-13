@@ -1,0 +1,6 @@
+run:
+  skip-dirs:
+    - .git
+    - mocks
+    - scripts
+    - vendor
