@@ -1,9 +1,17 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 	"todo-list-task/internal/app"
-	"todo-list-task/internal/infrastructure/http"
+	handlerHttp "todo-list-task/internal/infrastructure/http"
 	"todo-list-task/internal/infrastructure/memory"
 	"todo-list-task/internal/middleware"
 	"todo-list-task/internal/utils"
@@ -13,14 +21,14 @@ func main() {
 
 	taskRepo := memory.NewInMemoryTaskRepository()
 	taskService := app.NewTaskService(taskRepo)
-	taskHandler := http.NewTaskHandler(taskService)
+	taskHandler := handlerHttp.NewTaskHandler(taskService)
 
 	bcryptCrypto := app.BcryptCrypto{}
 	appCrypto := utils.NewHashPassword(bcryptCrypto)
 	userRepo := memory.NewInMemoryUserRepository(appCrypto)
 
 	userService := app.NewUserService(userRepo)
-	userHandler := http.NewUserHandler(userService)
+	userHandler := handlerHttp.NewUserHandler(userService)
 
 	r := gin.Default()
 
@@ -33,8 +41,31 @@ func main() {
 	r.PUT("/tasks/:id", middleware.AuthMiddleware(), taskHandler.UpdateTask)
 	r.DELETE("tasks/:id", middleware.AuthMiddleware(), taskHandler.DeleteTask)
 
-	err := r.Run(":8080")
-	if err != nil {
-		return
+	srv := &http.Server{
+		Addr:    ":8080",
+		Handler: r,
 	}
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		<-quit
+		log.Println("Recibida señal de cierre, apagando servidor...")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+
+		defer cancel()
+
+		if err := srv.Shutdown(ctx); err != nil {
+			log.Fatalf("Error al apagar el servidor: %v", err)
+		}
+		log.Println("Servidor apagado correctamente")
+	}()
+
+	log.Println("Servidor iniciado en el puerto 8080")
+	if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatalf("Error en el servidor: %v", err)
+	}
+
+	log.Println("Salida limpia del programa")
 }

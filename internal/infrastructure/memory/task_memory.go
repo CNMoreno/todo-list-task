@@ -2,7 +2,9 @@ package memory
 
 import (
 	"errors"
+	"math/rand"
 	"sync"
+	"time"
 	"todo-list-task/internal/domain"
 )
 
@@ -17,11 +19,16 @@ func NewInMemoryTaskRepository() *InMemoryTaskRepository {
 	}
 }
 
+func simulateDelay() {
+	time.Sleep(time.Second * time.Duration(rand.Intn(2)))
+}
+
 // CreateTask creates a new task in the in-memory repository.
 func (r *InMemoryTaskRepository) CreateTask(task *domain.Task) (*domain.Task, error) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 
+	simulateDelay()
 	r.tasks[task.ID] = task
 	return task, nil
 }
